@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+
 public class PlayerMovement : MonoBehaviour
 {
 
-    public float speed = 10, jumpVelocity = 10;
+	public float speed = 10, jumpVelocity = 10;
     public LayerMask playerMask;
     Transform myTrans, tagGround, tagLeft, tagRight;
     Rigidbody2D myBody;
@@ -17,7 +18,7 @@ public class PlayerMovement : MonoBehaviour
 	private Vector3 _target;
 	private Animator playerAnimator;
 
-	bool isGrounded = false, isLeftSide = false, isRightSide = false, jumping = false, dashIsCalled = false;
+	bool isGrounded = false, isLeftSide = false, isRightSide = false, jumping = false;
     public bool facingRight = false, facingLeft = false;
 
     // Use this for initialization
@@ -66,7 +67,11 @@ public class PlayerMovement : MonoBehaviour
 
 		playerAnimator.SetBool ("isAtking", false);
    
-
+		if (transform.position.y <= -8) {
+			soundManager.PlaySound ("playerHit");
+			Destroy(gameObject);
+			Application.LoadLevel (0);
+		}
 
 
 
@@ -110,6 +115,7 @@ public class PlayerMovement : MonoBehaviour
 
         if (Input.GetButtonDown("Fire1") && Time.time > nextFire)
         {
+			soundManager.PlaySound ("shooting");
 			playerAnimator.SetBool ("isAtking", true);
 			nextFire = Time.time + fireRate;
             Fire();
@@ -123,7 +129,7 @@ public class PlayerMovement : MonoBehaviour
     {
         Vector2 moveVel = myBody.velocity;
 
-        if (isLeftSide && !isGrounded && jumping == false|| isRightSide && !isGrounded && jumping == false)
+		if (moveVel.x != .85 && isLeftSide && !isGrounded && jumping == false|| isRightSide && !isGrounded && jumping == false)
         {
 
             moveVel.y = -0.5f;
@@ -216,7 +222,7 @@ public class PlayerMovement : MonoBehaviour
 	public void Dash(float horizonalInput)
 	{
 		Vector2 moveVel = myBody.velocity;
-		dashIsCalled = true;
+
 		playerAnimator.SetBool ("isAtking", true);
 		if (isLeftSide && !isGrounded && jumping == false|| isRightSide && !isGrounded && jumping == false)
 		{
